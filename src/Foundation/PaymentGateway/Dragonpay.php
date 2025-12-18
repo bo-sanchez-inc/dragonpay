@@ -164,12 +164,22 @@ class Dragonpay implements PaymentGatewayInterface
 
 	/**
 	 * Our digest type
-	 * 
+	 *
 	 * For Dragon Pay, it is sha1
 	 *
 	 * @var string
+	 * @deprecated Use $digest_algorithm instead
 	 */
 	protected $digest_type = 'sha1';
+
+	/**
+	 * The digest algorithm to use for signature verification
+	 *
+	 * Supported algorithms: 'sha1', 'hmac-sha256', 'rsa-sha256'
+	 *
+	 * @var string
+	 */
+	protected $digest_algorithm = 'sha1';
 
 	/**
 	 * DragonPay digest code
@@ -248,29 +258,60 @@ class Dragonpay implements PaymentGatewayInterface
 
     /**
      * Constructor
-     * 
+     *
      * @param array $merchant_account
      * @param bool $sandbox
      * @param \Crazymeeks\Contracts\DigestInterface $digestor|null
+     * @param string $digest_algorithm Algorithm to use: 'sha1', 'hmac-sha256', 'rsa-sha256'
      */
     public function __construct(
         array $merchant_account,
         $sandbox = true,
-        DigestInterface $digestor = null
+        DigestInterface $digestor = null,
+        $digest_algorithm = 'sha1'
     )
     {
+        $this->digest_algorithm = $digest_algorithm;
         $this->request = new RequestBag();
         $this->channels = new PaymentChannels();
+
+        // If no digestor provided, create one based on algorithm
+        if (is_null($digestor)) {
+            $digestor = $this->createDigestor($digest_algorithm, $merchant_account);
+        }
+
         $this->parameters = new Parameters($this, $digestor);
         $this->parameters->add($merchant_account);
         $this->setMerchantAccount($merchant_account);
         $this->is_sandbox = $sandbox;
     }
 
+    /**
+     * Factory method to create appropriate digestor based on algorithm
+     *
+     * @param string $algorithm The digest algorithm to use
+     * @param array $merchant_account The merchant account configuration
+     * @return \Crazymeeks\Contracts\DigestInterface
+     * @throws \Exception If algorithm is not supported
+     */
+    protected function createDigestor($algorithm, $merchant_account)
+    {
+        switch ($algorithm) {
+            case 'hmac-sha256':
+                return new \Crazymeeks\Encryption\HmacSha256Encryption(
+                    $merchant_account['password']
+                );
+            case 'rsa-sha256':
+                throw new \Exception('RSA-SHA256 not yet implemented. Please check back in a future release.');
+            case 'sha1':
+            default:
+                return new \Crazymeeks\Encryption\Sha1Encryption();
+        }
+    }
 
     /**
      * Return internal properties for debugging purposes
-     * 
+     *
      * @see https://www.php.net/manual/en/language.oop5.magic.php#object.debuginfo
      *
      * @return array

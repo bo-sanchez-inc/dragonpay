@@ -1,14 +1,17 @@
 {
-    "name": "crazymeeks/dragonpay",
-    "description": "A PHP library for Dragonpay payment gateway",
+    "name": "bo-sanchez-inc/dragonpay",
+    "description": "Dragonpay PHP Library (Extended with HMAC-SHA256 & RSA-SHA256 support)",
     "type": "library",
     "license": "MIT",
     "keywords": [
         "Dragonpay library",
         "Dragonpay PHP library",
-        "Dragonpay PHP"
+        "Dragonpay PHP",
+        "HMAC-SHA256",
+        "RSA-SHA256",
+        "Payment Gateway"
     ],
-    "homepage": "https://github.com/crazymeeks/dragonpay",
+    "homepage": "https://github.com/bo-sanchez-inc/dragonpay",
     "authors": [
         {
             "name": "jclaud",
@@ -32,29 +35,10 @@
             "Tests\\": "tests"
         }
     },
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "crazymeeks/dragonpay",
-                "version": "v3.2.10",
-                "source": {
-                    "url": "git://github.com/crazymeeks/dragonpay",
-                    "type": "git",
-                    "reference": "v3.2.10"
-                },
-                "autoload": {
-                    "psr-4": {
-                        "Crazymeeks\\": "src"
-                    }
-                }
-            }
-            
-        }
-    ],
     "extra": {
         "branch-alias": {
-            "dev-master": "v3.2.x-dev"
+            "dev-master": "v3.3.x-dev"
         }
-    }
+    },
+    "version": "3.3.0"
 }
